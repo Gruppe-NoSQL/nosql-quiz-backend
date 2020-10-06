@@ -1,8 +1,4 @@
 {
-    "database": {
-        "databaseURL": "mongodb+srv://test:test123@cluster0.sgd6o.mongodb.net/test?retryWrites=true&w=majority",
-        "databaseMessage": "Database-Connection successfull"
-    },
     "server": {
         "port": 3001,
         "startMessage": "Server started on Port 3001"
