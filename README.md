@@ -1,4 +1,4 @@
-# mongodb-quiz-backend
+# nosql-quiz-backend
 
 build-command:
 ```
