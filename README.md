@@ -1,6 +1,6 @@
 # nosql-quiz-backend
 
-Backend für NoSQL-Quiz
+Backend für NoSQL-Quiz:
 
 build-command:
 ```
