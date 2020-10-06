@@ -1,5 +1,7 @@
 # nosql-quiz-backend
 
+Backend für NoSQL-Quiz
+
 build-command:
 ```
     npm run build
