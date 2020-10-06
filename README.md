@@ -2,6 +2,11 @@
 
 Backend für NoSQL-Quiz:
 
+install:
+```
+    npm install
+```
+
 build-command:
 ```
     npm run build
