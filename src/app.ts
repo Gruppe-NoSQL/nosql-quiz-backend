@@ -8,6 +8,15 @@ import * as config from './config.json';
 
 import Routes from './modules/routes.module';
 
+//setup environment variables
+import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+
+let env: any = dotenv.parse(fs.readFileSync(path.join(__dirname, '../process.env')));
+
+console.log(env.DATABASE_URL);
+
 //setup app
 const app = express();
 
@@ -18,6 +27,7 @@ app.use(compression());
 app.use(cors());
 app.use(morgan('dev'));
 
+//setup routes
 const routes: Routes = new Routes();
 app.use('/', routes.getRouter());
 
