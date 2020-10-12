@@ -3,6 +3,7 @@ import * as bodyParser from "body-parser";
 import compression from "compression";
 import cors from "cors";
 import morgan from 'morgan';
+import mongoose from 'mongoose'
 
 import * as config from './config.json';
 
@@ -16,6 +17,9 @@ import path from 'path';
 let env: any = dotenv.parse(fs.readFileSync(path.join(__dirname, '../process.env')));
 
 console.log(env.DATABASE_URL);
+
+//setup mongoDB connection
+mongoose.connect(env.DATABASE_URL, { useNewUrlParser:true });
 
 //setup app
 const app = express();
