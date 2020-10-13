@@ -5,7 +5,7 @@ import IUser from './../interfaces/IUser';
 const UserSchema: Schema = new Schema({
     username: {type: String, required: true},
     deviceId: {type: String, required: true},
-    score: {type: Number, default: 0}
+    score: {type: Number, default: 0} 
 }, 
 {
     toObject: {
