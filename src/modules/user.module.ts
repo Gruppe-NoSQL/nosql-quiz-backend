@@ -11,7 +11,7 @@ export default class HelloWorld {
 
     public getRouter(): Router{
         //setup Routes
-        this.router.post('/post', this.createUser);
+        this.router.post('/', this.createUser);
         return this.router;
     }
 
