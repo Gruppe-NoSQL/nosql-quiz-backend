@@ -9,23 +9,56 @@ export default class HelloWorld {
         this.router = Router();
     }
 
-    public getRouter(): Router{
+    public getRouter(): Router {
         //setup Routes
+        this.router.get('/', this.getUserList);
+        this.router.get('/:id', this.getUserById);
         this.router.post('/', this.createUser);
+        this.router.put('/:id', this.updateUser);
+        this.router.delete('/:id', this.deleteUser);
         return this.router;
     }
 
-    private createUser(req: Request, res: Response) {
-        console.log(req.body);
-        UserModel.create(req.body)
-        .then((user)=> {
-            console.log(user);
-            res.json(user);
+    private getUserList(req: Request, res: Response) {
+        UserModel.find()
+        .populate('question')
+        .then((users) => {
+            res.json(users)       
         })
-        .catch((err) => {
-            res.json({err: err});
-        });
+        .catch(err => res.status(500).json(err));
     }
 
-    
+    private getUserById(req: Request, res: Response) {
+        UserModel.findById(req.params.id)
+        .then((user) => {
+            res.json(user);
+        })
+        .catch(err => res.status(500).json(err));
+    }
+
+    private createUser(req: Request, res: Response) {
+        UserModel.create(req.body)
+            .then((user) => {
+                res.json(user);
+            })
+            .catch(err => res.status(500).json(err));
+    }
+
+    private updateUser(req: Request, res: Response) {
+        UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true})
+        .then((user) => {
+            res.json(user);
+        })
+        .catch(err => res.status(500).json(err));
+    }
+
+    private deleteUser(req: Request, res: Response) {
+        UserModel.findByIdAndDelete(req.params.id)
+        .then((user) => {
+            res.send("User " + req.params.id + " wurde erfolgreich gelöscht");
+        })
+    }
+
+
+
 }
