@@ -1,8 +1,9 @@
-import { Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
+
 
 export default interface IUser extends Document {
     username: string;
     createdAt: Date;
     deviceId: string;
-    score: number;
+    submissions: Array<Schema.Types.ObjectId>;
 }
