@@ -1,4 +1,3 @@
-import { Mongoose } from "mongoose";
 import { Document, Schema} from 'mongoose';
 
 export default interface IQuestionSubSchema extends Document {

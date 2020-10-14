@@ -8,6 +8,8 @@ const QuestionSubSchema : Schema <IQuestionSubSchema> = new Schema ({
   //id ausschalten
   question: {type: Schema.Types.ObjectId, required: true},
   submission: {type: String, required: true}
+}, {
+  _id: false
 });
 
 QuestionSubSchema.virtual('answerCorrect').get(function( this: { question:String, submission: String}) {
