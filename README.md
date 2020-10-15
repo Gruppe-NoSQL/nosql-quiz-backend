@@ -31,3 +31,5 @@ run docker container
 ```
     docker run --publish 8001:3001 backend
 ```
+
+[Link to the Documentation](https://app.swaggerhub.com/apis-docs/lumaghg/NoSQL-Backend/1.0.1#/)
