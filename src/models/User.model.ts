@@ -1,24 +1,16 @@
 import { timeStamp } from 'console';
 import mongoose, { Schema } from 'mongoose';
+import QuestionModel from './Question.model'
 import IUser from './../interfaces/IUser';
 import IQuestionSubSchema from '../interfaces/IQuestionSubSchema'
 
 //User Question Subschema
 const QuestionSubSchema : Schema <IQuestionSubSchema> = new Schema ({
-  question: {type: Schema.Types.ObjectId, required: true},
-  submission: {type: String, required: true}
+  questionId: {type: Schema.Types.ObjectId, required: true},
+  submission: {type: String, required: true},
+  answerCorrect: {type: Boolean, required: false}
 }, {
   _id: false,
-  toObject: {
-    virtuals: true
-  },
-  toJSON: {
-    virtuals: true
-  }
-});
-
-QuestionSubSchema.virtual('answerCorrect').get(function( this: { question:String, submission: String}) {
-  return this.question == this.submission ? true : false;
 });
   
 

@@ -6,4 +6,5 @@ export default interface IUser extends Document {
     createdAt: Date;
     deviceId: string;
     submissions: Array<Schema.Types.ObjectId>;
+    score: Number;
 }
