@@ -1,6 +1,10 @@
 import { Request, Response, Router } from 'express';
 import UserModel from '../models/User.model';
 import IUser from '../interfaces/IUser';
+import QuestionModel from '../models/Question.model';
+import IQuestion from '../interfaces/IQuestion'
+import { urlencoded } from 'body-parser';
+import IQuestionSubSchema from '../interfaces/IQuestionSubSchema';
 
 export default class HelloWorld {
 
@@ -17,6 +21,7 @@ export default class HelloWorld {
         this.router.post('/', this.createUser);
         this.router.put('/:id', this.updateUser);
         this.router.delete('/:id', this.deleteUser);
+        this.router.put('/:id/sub', this.scoreUpdate);
         return this.router;
     }
 
@@ -62,6 +67,17 @@ export default class HelloWorld {
         });
     }
 
+    private scoreUpdate(req: Request, res: Response) {
+            for (let index = 0; index < req.body.length; index++) {
+                const element = req.body.submissions[index];
+                console.log(element.questionId);
+                //if(element.questionId)
+
+            }
+
+        
+    }
+    
 
 
 }
