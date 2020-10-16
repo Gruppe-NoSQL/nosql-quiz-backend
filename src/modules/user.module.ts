@@ -33,7 +33,7 @@ export default class HelloWorld {
     }
 
     private getUserById(req: Request, res: Response) {
-        UserModel.findOne({ deviceId: req.params.id }, (err: any, user: IUser) => {
+        UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
             if (err || !user) { return err ? res.status(500).json(err) : res.status(400).json({ 'message': 'No User with an id of: ' + req.params.id }); }
             res.json(user);
         });
