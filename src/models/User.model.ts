@@ -5,11 +5,16 @@ import IQuestionSubSchema from '../interfaces/IQuestionSubSchema'
 
 //User Question Subschema
 const QuestionSubSchema : Schema <IQuestionSubSchema> = new Schema ({
-  //id ausschalten
   question: {type: Schema.Types.ObjectId, required: true},
   submission: {type: String, required: true}
 }, {
-  _id: false
+  _id: false,
+  toObject: {
+    virtuals: true
+  },
+  toJSON: {
+    virtuals: true
+  }
 });
 
 QuestionSubSchema.virtual('answerCorrect').get(function( this: { question:String, submission: String}) {
@@ -21,12 +26,12 @@ QuestionSubSchema.virtual('answerCorrect').get(function( this: { question:String
 const UserSchema: Schema = new Schema({
     username: {type: String, required: true},
     deviceId: {type: String, required: true},
+    score: {type: Number, required: false},
     submissions: [
       {
         type: QuestionSubSchema
       }
-    ],
-    score: {type: Number}
+    ]
     
 }, 
 {
