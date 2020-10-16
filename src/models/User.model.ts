@@ -25,7 +25,8 @@ const UserSchema: Schema = new Schema({
       {
         type: QuestionSubSchema
       }
-    ]
+    ],
+    score: {type: Number}
     
 }, 
 {
