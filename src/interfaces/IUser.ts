@@ -7,5 +7,5 @@ export default interface IUser extends Document {
     createdAt: Date;
     deviceId: string;
     submissions: Array<IQuestionSubSchema>;
-    score: Number;
+    score: number;
 }

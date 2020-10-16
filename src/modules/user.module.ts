@@ -17,7 +17,7 @@ export default class HelloWorld {
     public getRouter(): Router {
         //setup Routes
         this.router.get('/', this.getUserList);
-        this.router.get('/:id', this.getUserById);
+        this.router.get('/:deviceId', this.getUserById);
         this.router.post('/', this.createUser);
         this.router.put('/:id', this.updateUser);
         this.router.delete('/:id', this.deleteUser);
@@ -34,11 +34,9 @@ export default class HelloWorld {
     }
 
     private getUserById(req: Request, res: Response) {
-        //find the user with id: req.params.id, when found, call callback function and pass the user object and / or optionally the error
-        UserModel.findById(req.params.id, (err: any, user: IUser) => {
-            //if an error exists: send the error with HTTP code 500 as response and return; if the user cannot not be found: send a message with the userid and HTTP code 400 as response and return  
+        
+        UserModel.findOne({deviceId : req.params.id}, (err: any, user: IUser) => {
             if (err || !user) { return err ? res.status(500).json(err) : res.status(400).json({ 'message': 'No User with an id of: ' + req.params.id }); }
-            //otherwise send the user object as response
             res.json(user);
         });
     }
@@ -59,7 +57,7 @@ export default class HelloWorld {
     }
 
     private deleteUser(req: Request, res: Response) {
-        UserModel.findByIdAndDelete(req.params.id, (err: any, user: IUser | null) => {
+        UserModel.findOneAndDelete({deviceId : req.params.id}, (err: any, user: IUser | null) => {
             if (err || !user) { return err ? res.status(500).json(err) : res.status(400).json({ 'message': 'No User with an id of: ' + req.params.id }); }
 
             res.json(user);
@@ -67,8 +65,7 @@ export default class HelloWorld {
     }
 
     private async scoreUpdate(req: Request, res: Response) {
-        
-            let score: number = 0;
+        let score = 0;
            req.body.forEach((userData: IQuestionSubSchema) => {
                 QuestionModel.findById(userData.questionId, (err: any, question: IQuestion) => {
                     if(err) {return res.status(500).json(err)}
@@ -76,16 +73,17 @@ export default class HelloWorld {
                         userData.isAnswerCorrect = true;
                         score++;
                     }
-                    UserModel.findById(req.params.id, (err: any, user: IUser) => {
+                    UserModel.findOne({deviceId : req.params.id}, (err: any, user: IUser) => {
                         if(err) {res.status(400).json({message: "kein User mit der id" + req.params.id})}
                         let userDataAcc = user.submissions;
                         userDataAcc.push(userData);
+
                         let userUpdate = {
-                            score: score,
+                            score: user.score + score,
                             submissions: userDataAcc,
                             questionId: userData.questionId
                         }
-                        UserModel.findByIdAndUpdate(req.params.id, userUpdate, {new:true}, (err: any, user: any) => {
+                        UserModel.findOneAndUpdate({deviceId : req.params.id}, userUpdate, {new:true}, (err: any, user: any) => {
                             if(err) {res.status(500).json(user);}
                             res.json(user);
                         })
