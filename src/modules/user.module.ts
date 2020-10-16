@@ -19,8 +19,6 @@ export default class HelloWorld {
         this.router.get('/', this.getUserList);
         this.router.get('/:deviceId', this.getUserById);
         this.router.post('/', this.createUser);
-        this.router.put('/:id', this.updateUser);
-        this.router.delete('/:id', this.deleteUser);
         this.router.put('/:id/sub', this.scoreUpdate);
         return this.router;
     }
@@ -48,23 +46,7 @@ export default class HelloWorld {
         });
     }
 
-    private updateUser(req: Request, res: Response) {
-        UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err: any, user: IUser | null) => {
-            if (err || !user) { return err ? res.status(500).json(err) : res.status(400).json({ 'message': 'No User with an id of: ' + req.params.id }); }
-
-            res.json(user);
-        });
-    }
-
-    private deleteUser(req: Request, res: Response) {
-        UserModel.findOneAndDelete({deviceId : req.params.id}, (err: any, user: IUser | null) => {
-            if (err || !user) { return err ? res.status(500).json(err) : res.status(400).json({ 'message': 'No User with an id of: ' + req.params.id }); }
-
-            res.json(user);
-        });
-    }
-
-    private async scoreUpdate(req: Request, res: Response) {
+    private scoreUpdate(req: Request, res: Response) {
         let score = 0;
            req.body.forEach((userData: IQuestionSubSchema) => {
                 QuestionModel.findById(userData.questionId, (err: any, question: IQuestion) => {
