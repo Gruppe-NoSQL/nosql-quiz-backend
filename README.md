@@ -2,7 +2,7 @@
 
 Backend für NoSQL-Quiz:
 
-[Link to the Documentation](https://app.swaggerhub.com/apis-docs/lumaghg/NoSQL-Backend/1.0.1#/)
+[Link to the Documentation](https://app.swaggerhub.com/apis-docs/lumaghg/NoSQL-Backend/#/)
 
 install:
 ```
