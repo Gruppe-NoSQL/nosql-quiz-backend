@@ -27,7 +27,6 @@ export default class HelloWorld {
 
     private getUserList(req: Request, res: Response) {
         UserModel.find()
-            .populate('question')
             .exec((err: any, users: IUser[]) => {
                 if(err) {return res.status(500).json(err);}
                 res.json(users);
@@ -67,14 +66,36 @@ export default class HelloWorld {
         });
     }
 
-    private scoreUpdate(req: Request, res: Response) {
-            for (let index = 0; index < req.body.length; index++) {
-                const element = req.body.submissions[index];
-                console.log(element.questionId);
-                //if(element.questionId)
+    private async scoreUpdate(req: Request, res: Response) {
+        
+            let score: number = 0;
+           req.body.forEach((userData: IQuestionSubSchema) => {
+                QuestionModel.findById(userData.questionId, (err: any, question: IQuestion) => {
+                    if(err) {return res.status(500).json(err)}
+                    if(userData.submission == question.correctAnswer) {
+                        userData.isAnswerCorrect = true;
+                        score++;
+                    }
+                    UserModel.findById(req.params.id, (err: any, user: IUser) => {
+                        if(err) {res.status(400).json({message: "kein User mit der id" + req.params.id})}
+                        let userDataAcc = user.submissions;
+                        userDataAcc.push(userData);
+                        let userUpdate = {
+                            score: score,
+                            submissions: userDataAcc,
+                            questionId: userData.questionId
+                        }
+                        UserModel.findByIdAndUpdate(req.params.id, userUpdate, {new:true}, (err: any, user: any) => {
+                            if(err) {res.status(500).json(user);}
+                            res.json(user);
+                        })
+                        
+                    })
+                    
+                });
 
-            }
-
+        })
+        
         
     }
     

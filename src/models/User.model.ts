@@ -8,7 +8,7 @@ import IQuestionSubSchema from '../interfaces/IQuestionSubSchema'
 const QuestionSubSchema : Schema <IQuestionSubSchema> = new Schema ({
   questionId: {type: Schema.Types.ObjectId, required: true},
   submission: {type: String, required: true},
-  answerCorrect: {type: Boolean, required: false}
+  isAnswerCorrect: {type: Boolean, default: false}
 }, {
   _id: false,
 });
