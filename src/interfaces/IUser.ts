@@ -8,4 +8,5 @@ export default interface IUser extends Document {
     deviceId: string;
     submissions: Array<IQuestionSubSchema>;
     score: number;
+    isFinished: Boolean;
 }

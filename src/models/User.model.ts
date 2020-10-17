@@ -18,7 +18,8 @@ const QuestionSubSchema : Schema <IQuestionSubSchema> = new Schema ({
 const UserSchema: Schema = new Schema({
     username: {type: String, required: true},
     deviceId: {type: String, required: true},
-    score: {type: Number, required: false},
+    score: {type: Number, required: false, default: 0},
+    isFinished: {type: Boolean, required: false, default: false},
     submissions: [
       {
         type: QuestionSubSchema

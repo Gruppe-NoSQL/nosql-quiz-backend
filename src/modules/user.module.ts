@@ -20,7 +20,7 @@ export default class HelloWorld {
         this.router.get('/:deviceId', this.getUserById);
         this.router.get('/:deviceId/isRegistered', this.isUserRegistered);
         this.router.post('/', this.createUser);
-        this.router.put('/:id/sub', this.scoreUpdate);
+        this.router.put('/:deviceId/sub', this.scoreUpdate);
         return this.router;
     }
 
@@ -40,11 +40,11 @@ export default class HelloWorld {
     }
 
     private isUserRegistered(req: Request, res: Response) {
-        UserModel.findOne({deviceId : req.params.deviceId}, (err: any, user: IUser) => {
-            if(user) {
-                return res.json({isRegistered: true});
-            } 
-            res.json({isRegistered: false});
+        UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
+            if (user) {
+                return res.json({ isRegistered: true });
+            }
+            res.json({ isRegistered: false });
         })
     }
 
@@ -56,30 +56,52 @@ export default class HelloWorld {
     }
 
     private scoreUpdate(req: Request, res: Response) {
-        let score = 0;
-        req.body.forEach((userData: IQuestionSubSchema) => {
-            QuestionModel.findById(userData.questionId, (err: any, question: IQuestion) => {
-                if (err) { return res.status(500).json(err) }
-                if (userData.submission == question.correctAnswer) {
-                    userData.isAnswerCorrect = true;
-                    score++;
-                }
-                UserModel.findOne({ deviceId: req.params.id }, (err: any, user: IUser) => {
-                    if (err) { res.status(400).json({ message: "kein User mit der id" + req.params.id }) }
-                    let userDataAcc = user.submissions;
-                    userDataAcc.push(userData);
+        //define Promise
+        let analyzeOneSubmissionPromise = (userSubmission: IQuestionSubSchema) => {
+            return new Promise((resolve: (userUpdate: IQuestionSubSchema) => void, reject: (err: any) => void) => {
+                QuestionModel.findById(userSubmission.questionId, (err: any, question: IQuestion) => {
+                    if (!question) { return reject({ err: "Fragen nicht gefunden", status: 500 }) }
+                    userSubmission.isAnswerCorrect = (userSubmission.submission == question.correctAnswer);
+                    resolve(userSubmission);
+                });
+            })
+        }
 
-                    let userUpdate = {
-                        score: user.score + score,
-                        submissions: userDataAcc,
-                        questionId: userData.questionId
-                    }
-                    UserModel.findOneAndUpdate({ deviceId: req.params.id }, userUpdate, { new: true }, (err: any, user: any) => {
-                        if (err) { res.status(500).json(user); }
-                        res.json(user);
-                    })
-                })
+        UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
+            //create Promises for every question/answer pair
+            let promises: Array<IQuestionSubSchema> = req.body.map((userSubmission: IQuestionSubSchema) => {
+                return analyzeOneSubmissionPromise(userSubmission);
             });
-        })
+            console.log(promises);
+            //wait for all promises to finish, then send confirmation
+            Promise.all(promises)
+                .then((userSubmissions: Array<IQuestionSubSchema>) => {
+                    let score: number = userSubmissions.reduce((acc: number, curr: any) => {
+                        if (curr.isAnswerCorrect) {
+                            acc++;
+                        }
+                        console.log(acc);
+                        return acc;
+                    }, user.score);
+                    user.submissions = user.submissions.concat(userSubmissions);
+                    let userUpdate: any = {
+                        score: score,
+                        submissions: user.submissions,
+                        isFinished: true
+                    }
+                    UserModel.findOneAndUpdate({ deviceId: req.params.deviceId }, userUpdate, { new: true }, (err: any, user: any) => {
+                        if (err) {
+                            return res.status(500).json({ message: "kein user mit der deviceid" + req.params.deviceId })
+                        };
+                    });
+                    res.json({
+                        message: "user was updated successfully"
+                    });
+                })
+                .catch((err: any) => {
+                    res.status(500).json(err);
+                    console.log(err);
+                })
+        });
     }
 }
