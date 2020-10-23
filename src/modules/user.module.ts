@@ -57,6 +57,7 @@ export default class HelloWorld {
 
     private scoreUpdate(req: Request, res: Response) {
         //define Promise
+        /*
         let analyzeOneSubmissionPromise = (userSubmission: IQuestionSubSchema) => {
             return new Promise((resolve: (userUpdate: IQuestionSubSchema) => void, reject: (err: any) => void) => {
                 QuestionModel.findById(userSubmission.questionId, (err: any, question: IQuestion) => {
@@ -66,42 +67,47 @@ export default class HelloWorld {
                 });
             })
         }
+        */
+
+
 
         UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
-            //create Promises for every question/answer pair
-            let promises: Array<IQuestionSubSchema> = req.body.map((userSubmission: IQuestionSubSchema) => {
-                return analyzeOneSubmissionPromise(userSubmission);
+            
+            let questionIds = req.body.map((userSubmission: IQuestionSubSchema) => {
+                return userSubmission.questionId;
             });
-            console.log(promises);
-            //wait for all promises to finish, then send confirmation
-            Promise.all(promises)
-                .then((userSubmissions: Array<IQuestionSubSchema>) => {
-                    let score: number = userSubmissions.reduce((acc: number, curr: any) => {
-                        if (curr.isAnswerCorrect) {
-                            acc++;
-                        }
-                        console.log(acc);
-                        return acc;
-                    }, user.score);
-                    user.submissions = user.submissions.concat(userSubmissions);
-                    let userUpdate: any = {
-                        score: score,
-                        submissions: user.submissions,
-                        isFinished: true
+
+            QuestionModel.find({ '_id': { $in: questionIds } }, (err: any, questionDocs: Array<IQuestion>) => {
+                if(err) {return res.status(500).json({err: err})}
+
+                for (let i = 0; i < questionDocs.length; i++) {
+
+                    req.body[i].isAnswerCorrect = (questionDocs[i].correctAnswer == req.body[i].submission);
+                }
+
+                let score: number = req.body.reduce((acc: number, curr: any) => {
+                    if (curr.isAnswerCorrect) {
+                        acc++;
                     }
-                    UserModel.findOneAndUpdate({ deviceId: req.params.deviceId }, userUpdate, { new: true }, (err: any, user: any) => {
-                        if (err) {
-                            return res.status(500).json({ message: "kein user mit der deviceid" + req.params.deviceId })
-                        };
-                    });
+
+                    return acc;
+                }, user.score);
+                user.submissions = user.submissions.concat(req.body);
+                let userUpdate: any = {
+                    score: score,
+                    submissions: user.submissions,
+                    isFinished: true
+                }
+
+                UserModel.findOneAndUpdate({ deviceId: req.params.deviceId }, userUpdate, { new: true }, (err: any, user: any) => {
+                    if (err) {return res.status(500).json({ message: "kein user mit der deviceid" + req.params.deviceId })};
                     res.json({
                         message: "user was updated successfully"
                     });
-                })
-                .catch((err: any) => {
-                    res.status(500).json(err);
-                    console.log(err);
-                })
-        });
+                });
+
+            });
+        })
+
     }
 }

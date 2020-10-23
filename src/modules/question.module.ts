@@ -28,7 +28,7 @@ export default class HelloWorld {
             if (err) { return res.status(500).json(err); }
             UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
                 //remove solutions, unless user has alreay finished the quiz
-                if (!user) { res.status(400).json({ message: "Kein User mit der deviceId" + req.params.deviceId }) }
+                if (!user) { return res.status(400).json({ message: "Kein User mit der deviceId" + req.params.deviceId }) }
                 if (user.isFinished) {
                     return res.json(questions);
                 }
