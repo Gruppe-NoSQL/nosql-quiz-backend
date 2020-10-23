@@ -56,21 +56,6 @@ export default class HelloWorld {
     }
 
     private scoreUpdate(req: Request, res: Response) {
-        //define Promise
-        /*
-        let analyzeOneSubmissionPromise = (userSubmission: IQuestionSubSchema) => {
-            return new Promise((resolve: (userUpdate: IQuestionSubSchema) => void, reject: (err: any) => void) => {
-                QuestionModel.findById(userSubmission.questionId, (err: any, question: IQuestion) => {
-                    if (!question) { return reject({ err: "Fragen nicht gefunden", status: 500 }) }
-                    userSubmission.isAnswerCorrect = (userSubmission.submission == question.correctAnswer);
-                    resolve(userSubmission);
-                });
-            })
-        }
-        */
-
-
-
         UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
             
             let questionIds = req.body.map((userSubmission: IQuestionSubSchema) => {
@@ -105,9 +90,7 @@ export default class HelloWorld {
                         message: "user was updated successfully"
                     });
                 });
-
             });
         })
-
     }
 }
