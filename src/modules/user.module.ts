@@ -33,7 +33,7 @@ export default class HelloWorld {
 
     private getUserList(req: Request, res: Response) {
         UserModel.find()
-        .sort('-score')
+            .sort('-score')
             .exec((err: any, users: IUser[]) => {
                 if (err) { return res.status(500).json(err); }
                 res.json(users);
@@ -57,22 +57,26 @@ export default class HelloWorld {
     }
 
     private createUser(req: Request, res: Response) {
-        UserModel.create(req.body, (err: any, user: IUser | any) => {
-            if (err) { return res.status(400).json(err); }
-            res.json(user);
-        });
+        UserModel.findOne({ deviceId: req.body.deviceId }, (err: any, user: IUser | null) => {
+            if (user) { return res.status(400).json({ message: "Es existiert bereits ein Nutzer mit dieser deviceId" }); }
+
+            UserModel.create(req.body, (err: any, user: IUser | any) => {
+                if (err) { return res.status(500).json(err); }
+                res.json(user);
+            });
+        })
     }
 
     private scoreUpdate(req: Request, res: Response) {
         console.log(req.body);
         UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
-            
+
             let questionIds = req.body.map((userSubmission: IQuestionSubSchema) => {
                 return userSubmission.questionId;
             });
 
             QuestionModel.find({ '_id': { $in: questionIds } }, (err: any, questionDocs: Array<IQuestion>) => {
-                if(err) {return res.status(500).json({err: err})}
+                if (err) { return res.status(500).json({ err: err }) }
 
                 for (let i = 0; i < questionDocs.length; i++) {
 
@@ -94,7 +98,7 @@ export default class HelloWorld {
                 }
 
                 UserModel.findOneAndUpdate({ deviceId: req.params.deviceId }, userUpdate, { new: true }, (err: any, user: any) => {
-                    if (err) {return res.status(500).json({ message: "kein user mit der deviceid" + req.params.deviceId })};
+                    if (err) { return res.status(500).json({ message: "kein user mit der deviceid" + req.params.deviceId }) };
                     res.json({
                         message: "user was updated successfully"
                     });
