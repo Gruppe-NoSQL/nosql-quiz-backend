@@ -21,15 +21,9 @@ export default class HelloWorld {
         this.router.get('/:deviceId/isRegistered', this.isUserRegistered);
         this.router.post('/', this.createUser);
         this.router.put('/:deviceId/sub', this.scoreUpdate);
-        this.router.delete('/', this.deleteUser);
         return this.router;
     }
 
-    private deleteUser(req: Request, res: Response) {
-        UserModel.deleteMany({}, (err: any) => {
-            res.json(err);
-        })
-    }
 
     private getUserList(req: Request, res: Response) {
         UserModel.find()
