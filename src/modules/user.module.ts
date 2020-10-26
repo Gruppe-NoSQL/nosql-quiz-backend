@@ -21,11 +21,19 @@ export default class HelloWorld {
         this.router.get('/:deviceId/isRegistered', this.isUserRegistered);
         this.router.post('/', this.createUser);
         this.router.put('/:deviceId/sub', this.scoreUpdate);
+        this.router.delete('/', this.deleteUser);
         return this.router;
+    }
+
+    private deleteUser(req: Request, res: Response) {
+        UserModel.deleteMany({}, (err: any) => {
+            res.json(err);
+        })
     }
 
     private getUserList(req: Request, res: Response) {
         UserModel.find()
+        .sort('-score')
             .exec((err: any, users: IUser[]) => {
                 if (err) { return res.status(500).json(err); }
                 res.json(users);
@@ -56,6 +64,7 @@ export default class HelloWorld {
     }
 
     private scoreUpdate(req: Request, res: Response) {
+        console.log(req.body);
         UserModel.findOne({ deviceId: req.params.deviceId }, (err: any, user: IUser) => {
             
             let questionIds = req.body.map((userSubmission: IQuestionSubSchema) => {
