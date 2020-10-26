@@ -61,8 +61,8 @@ export default class HelloWorld {
             if (user) { return res.status(400).json({ message: "Es existiert bereits ein Nutzer mit dieser deviceId" }); }
 
             UserModel.create(req.body, (err: any, user: IUser | any) => {
-                if (err) { return res.status(500).json(err); }
-                res.json(user);
+                if (err) { return res.status(400).json(err); }
+                res.status(201).json(user);
             });
         })
     }
